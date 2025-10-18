@@ -3,18 +3,22 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import DashboardHeader from '../components/DashboardHeader';
 import DashboardCard from '../components/DashboardCard';
 
-export default function DashboardScreen() {
+export default function DashboardScreen({ navigation }) {
   const dashboardItems = [
-    { id: 1, title: 'Docentes', icon: '👨‍🏫' },
-    { id: 2, title: 'Espacios', icon: '🔧' },
-    { id: 3, title: 'Seccion', icon: '👥' },
-    { id: 4, title: 'Unidad Curricular', icon: '📚' },
-    { id: 5, title: 'Malla Curricular', icon: '📋' },
-    { id: 6, title: 'Reportes', icon: '📊' },
+    { id: 1, title: 'Docentes', icon: '👨‍🏫', screen: null },
+    { id: 2, title: 'Espacios', icon: '🔧', screen: null },
+    { id: 3, title: 'Seccion', icon: '👥', screen: null },
+    { id: 4, title: 'Unidad Curricular', icon: '📚', screen: 'UnidadCurricular' },
+    { id: 5, title: 'Malla Curricular', icon: '📋', screen: null },
+    { id: 6, title: 'Reportes', icon: '📊', screen: null },
   ];
 
   const handleCardPress = (item) => {
-    console.log(`Presionado: ${item.title}`);
+    if (item.screen) {
+      navigation.navigate(item.screen);
+    } else {
+      console.log(`Funcionalidad pendiente: ${item.title}`);
+    }
   };
 
   return (
