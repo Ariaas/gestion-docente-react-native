@@ -1,14 +1,21 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from "react-native";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
-export default function LoginForm({ 
-  nombreUsuario, 
-  setNombreUsuario, 
-  contraseniaUsuario, 
-  setContraseniaUsuario, 
-  onLogin 
+export default function LoginForm({
+  nombreUsuario,
+  setNombreUsuario,
+  contraseniaUsuario,
+  setContraseniaUsuario,
+  onLogin,
 }) {
   return (
     <View style={styles.loginFormWrapper}>
@@ -47,9 +54,7 @@ export default function LoginForm({
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.forgotPasswordLink}>
-        <Text style={styles.forgotPasswordText}>
-          ¿Olvidaste tu contraseña?
-        </Text>
+        <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
       </TouchableOpacity>
     </View>
   );
@@ -57,20 +62,20 @@ export default function LoginForm({
 
 const styles = StyleSheet.create({
   loginFormWrapper: {
-    flex: width > 768 ? 0.55 : 1,
-    padding: width > 768 ? 48 : 24,
-    paddingTop: width > 768 ? 48 : 32,
-    justifyContent: 'center',
+    flex: 0,
+    width: "100%",
+    padding: width > 768 ? 28 : 16,
+    paddingTop: width > 768 ? 28 : 12,
   },
   title: {
     fontSize: width > 768 ? 28 : 24,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#333",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: width > 768 ? 14 : 13,
-    color: '#6c757d',
+    color: "#6c757d",
     marginBottom: 28,
     lineHeight: 20,
   },
@@ -79,37 +84,37 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#495057',
+    fontWeight: "500",
+    color: "#495057",
     marginBottom: 8,
   },
   input: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ced4da',
+    borderColor: "#ced4da",
     padding: 14,
     fontSize: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   button: {
-    backgroundColor: '#0d6efd',
+    backgroundColor: "#0d6efd",
     borderRadius: 8,
     padding: 14,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 8,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   forgotPasswordLink: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 20,
     paddingVertical: 8,
   },
   forgotPasswordText: {
-    color: '#0d6efd',
+    color: "#0d6efd",
     fontSize: 14,
   },
 });

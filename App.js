@@ -5,6 +5,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import UnidadCurricularScreen from './screens/UnidadCurricularScreen';
+import MallaCurricularScreen from './screens/MallaCurricularScreen';
+import EspaciosScreen from './screens/EspaciosScreen';
+import DocenteScreen from './screens/DocenteScreen';
+import SeccionScreen from './screens/SeccionScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -40,6 +44,66 @@ export default function App() {
           options={{
             headerShown: true,
             headerTitle: 'Unidades Curriculares',
+            headerStyle: {
+              backgroundColor: '#0d6efd',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: '600',
+            },
+          }}
+        />
+        <Stack.Screen 
+          name="MallaCurricular" 
+          component={MallaCurricularScreen}
+          options={{
+            headerShown: true,
+            headerTitle: 'Gestionar Malla Curricular',
+            headerStyle: {
+              backgroundColor: '#0d6efd',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: '600',
+            },
+          }}
+        />
+        <Stack.Screen 
+          name="Espacios" 
+          component={EspaciosScreen}
+          options={{
+            headerShown: true,
+            headerTitle: 'Gestionar Espacios',
+            headerStyle: {
+              backgroundColor: '#0d6efd',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: '600',
+            },
+          }}
+        />
+        <Stack.Screen 
+          name="Docente" 
+          component={DocenteScreen}
+          options={{
+            headerShown: true,
+            headerTitle: 'Gestionar Docente',
+            headerStyle: {
+              backgroundColor: '#0d6efd',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: '600',
+            },
+          }}
+        />
+        <Stack.Screen 
+          name="Seccion" 
+          component={SeccionScreen}
+          options={{
+            headerShown: true,
+            headerTitle: 'Gestionar Sección',
             headerStyle: {
               backgroundColor: '#0d6efd',
             },

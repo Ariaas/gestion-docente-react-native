@@ -1,36 +1,25 @@
-import React, { useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  Dimensions,
-} from 'react-native';
-import LoginHeader from '../components/LoginHeader';
-import LoginForm from '../components/LoginForm';
-
-const { width } = Dimensions.get('window');
+import React, { useState } from "react";
+import { View, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import LoginHeader from "../components/LoginHeader";
+import LoginForm from "../components/LoginForm";
 
 export default function LoginScreen({ navigation }) {
-  const [nombreUsuario, setNombreUsuario] = useState('');
-  const [contraseniaUsuario, setContraseniaUsuario] = useState('');
+  const [nombreUsuario, setNombreUsuario] = useState("");
+  const [contraseniaUsuario, setContraseniaUsuario] = useState("");
 
   const handleLogin = () => {
-    navigation.navigate('Dashboard');
+    navigation.navigate("Dashboard");
   };
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={"padding"}
       style={styles.container}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.loginContainer}>
-          <LoginHeader />
+      <View style={styles.loginContainer}>
+        <LoginHeader />
+
+        <View style={styles.formCard}>
           <LoginForm
             nombreUsuario={nombreUsuario}
             setNombreUsuario={setNombreUsuario}
@@ -39,7 +28,7 @@ export default function LoginScreen({ navigation }) {
             onLogin={handleLogin}
           />
         </View>
-      </ScrollView>
+      </View>
     </KeyboardAvoidingView>
   );
 }
@@ -47,29 +36,25 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: width > 768 ? 20 : 0,
+    backgroundColor: "#f8f9fa",
   },
   loginContainer: {
-    width: '100%',
-    maxWidth: 900,
-    backgroundColor: '#fff',
-    borderRadius: width > 768 ? 24 : 0,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 10,
-    },
+    flex: 1,
+    backgroundColor: "#f8f9fa",
+    justifyContent: "center",
+    padding: 20,
+  },
+  formCard: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    alignSelf: "stretch",
+    maxWidth: 540,
+    alignSelf: "center",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 40,
-    elevation: 10,
-    flexDirection: width > 768 ? 'row' : 'column',
-    minHeight: width > 768 ? 'auto' : '100%',
+    shadowRadius: 4,
   },
 });

@@ -5,12 +5,11 @@ import DashboardCard from '../components/DashboardCard';
 
 export default function DashboardScreen({ navigation }) {
   const dashboardItems = [
-    { id: 1, title: 'Docentes', icon: '👨‍🏫', screen: null },
-    { id: 2, title: 'Espacios', icon: '🔧', screen: null },
-    { id: 3, title: 'Seccion', icon: '👥', screen: null },
+    { id: 1, title: 'Docentes', icon: '👨‍🏫', screen: 'Docente' },
+    { id: 2, title: 'Espacios', icon: '🔧', screen: 'Espacios' },
+    { id: 3, title: 'Seccion', icon: '👥', screen: 'Seccion' },
     { id: 4, title: 'Unidad Curricular', icon: '📚', screen: 'UnidadCurricular' },
-    { id: 5, title: 'Malla Curricular', icon: '📋', screen: null },
-    { id: 6, title: 'Reportes', icon: '📊', screen: null },
+    { id: 5, title: 'Malla Curricular', icon: '📋', screen: 'MallaCurricular' },
   ];
 
   const handleCardPress = (item) => {
