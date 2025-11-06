@@ -21,11 +21,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0d6efd"
-      }
+      },
+      "package": "com.grauuu.gestiondocentereactnative"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "sdkVersion": "54.0.0"
+    "sdkVersion": "54.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "8a2d6356-6f69-4239-8369-be285d2787e8"
+      }
+    }
   }
 }
