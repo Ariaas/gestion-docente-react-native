@@ -1,7 +1,9 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
+
 import LoginScreen from './screens/LoginScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import UnidadCurricularScreen from './screens/UnidadCurricularScreen';
@@ -9,17 +11,45 @@ import MallaCurricularScreen from './screens/MallaCurricularScreen';
 import EspaciosScreen from './screens/EspaciosScreen';
 import DocenteScreen from './screens/DocenteScreen';
 import SeccionScreen from './screens/SeccionScreen';
+import RecoverPasswordScreen from './screens/RecoverPasswordScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
+import NotificationsScreen from './screens/NotificationsScreen';
+import SecurityScreen from './screens/SecurityScreen';
 
 const Stack = createNativeStackNavigator();
 
-export default function App() {
+function AppContent() {
+  const { theme, isDarkMode } = useTheme();
+
+  const navigationTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: theme.colors.background,
+      card: theme.colors.card,
+      text: theme.colors.text,
+      border: theme.colors.border,
+    },
+  };
+
   return (
-    <NavigationContainer>
-      <StatusBar style="light" />
+    <NavigationContainer theme={navigationTheme}>
+      <StatusBar style={isDarkMode ? "light" : "dark"} />
       <Stack.Navigator
         initialRouteName="Login"
         screenOptions={{
           headerShown: false,
+          headerStyle: {
+            backgroundColor: theme.colors.card,
+          },
+          headerTintColor: theme.colors.text,
+          headerTitleStyle: {
+            fontWeight: '700',
+            fontSize: 18,
+          },
+          headerShadowVisible: false,
+          contentStyle: { backgroundColor: theme.colors.background },
         }}
       >
         <Stack.Screen name="Login" component={LoginScreen} />
@@ -28,14 +58,7 @@ export default function App() {
           component={DashboardScreen}
           options={{
             headerShown: true,
-            headerTitle: 'Sistema de Gestión Docente',
-            headerStyle: {
-              backgroundColor: '#0d6efd',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
+            headerTitle: 'Inicio',
           }}
         />
         <Stack.Screen 
@@ -44,13 +67,6 @@ export default function App() {
           options={{
             headerShown: true,
             headerTitle: 'Unidades Curriculares',
-            headerStyle: {
-              backgroundColor: '#0d6efd',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
           }}
         />
         <Stack.Screen 
@@ -58,14 +74,7 @@ export default function App() {
           component={MallaCurricularScreen}
           options={{
             headerShown: true,
-            headerTitle: 'Gestionar Malla Curricular',
-            headerStyle: {
-              backgroundColor: '#0d6efd',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
+            headerTitle: 'Malla Curricular',
           }}
         />
         <Stack.Screen 
@@ -73,14 +82,7 @@ export default function App() {
           component={EspaciosScreen}
           options={{
             headerShown: true,
-            headerTitle: 'Gestionar Espacios',
-            headerStyle: {
-              backgroundColor: '#0d6efd',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
+            headerTitle: 'Espacios',
           }}
         />
         <Stack.Screen 
@@ -88,14 +90,7 @@ export default function App() {
           component={DocenteScreen}
           options={{
             headerShown: true,
-            headerTitle: 'Gestionar Docente',
-            headerStyle: {
-              backgroundColor: '#0d6efd',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
+            headerTitle: 'Docentes',
           }}
         />
         <Stack.Screen 
@@ -103,17 +98,63 @@ export default function App() {
           component={SeccionScreen}
           options={{
             headerShown: true,
-            headerTitle: 'Gestionar Sección',
-            headerStyle: {
-              backgroundColor: '#0d6efd',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
+            headerTitle: 'Secciones',
+          }}
+        />
+        <Stack.Screen 
+          name="RecoverPassword" 
+          component={RecoverPasswordScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen 
+          name="Profile" 
+          component={ProfileScreen}
+          options={{
+            headerShown: true,
+            headerTitle: 'Mi Perfil',
+          }}
+        />
+        <Stack.Screen 
+          name="EditProfile" 
+          component={EditProfileScreen}
+          options={{
+            headerShown: true,
+            headerTitle: 'Editar Perfil',
+          }}
+        />
+        <Stack.Screen 
+          name="Notifications" 
+          component={NotificationsScreen}
+          options={{
+            headerShown: true,
+            headerTitle: 'Notificaciones',
+          }}
+        />
+        <Stack.Screen 
+          name="Security" 
+          component={SecurityScreen}
+          options={{
+            headerShown: true,
+            headerTitle: 'Seguridad',
           }}
         />
       </Stack.Navigator>
     </NavigationContainer>
+  );
+}
+
+import { UserProvider } from './context/UserContext';
+
+// ... (existing imports)
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <UserProvider>
+        <AppContent />
+      </UserProvider>
+    </ThemeProvider>
   );
 }

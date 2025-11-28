@@ -1,65 +1,62 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, Dimensions } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
 export default function LoginHeader() {
-  const insets = useSafeAreaInsets();
-
   return (
-    <SafeAreaView style={[styles.safeArea, { paddingTop: insets.top }]}>
-      <View style={styles.loginGraphic}>
+    <View style={styles.container}>
+      <View style={styles.logoContainer}>
         <Image
           source={require("../assets/icon.png")}
           style={styles.logo}
-          resizeMode="contain"
         />
-        <Text style={styles.titleGraphic}>Sistema de Gestión Docente</Text>
-        <Text style={styles.subtitleGraphic}>
-          Universidad Politécnica Territorial de Lara "Andrés Eloy Blanco"
-        </Text>
       </View>
-    </SafeAreaView>
+      <Text style={styles.title}>Sistema de Gestión Docente</Text>
+      <Text style={styles.subtitle}>
+        Universidad Politécnica Territorial de Lara "Andrés Eloy Blanco"
+      </Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    backgroundColor: "#0d6efd",
-  },
-  loginGraphic: {
-    flex: width > 768 ? 0.45 : 1,
-    backgroundColor: "#0d6efd",
-    padding: width > 768 ? 48 : 32,
-    paddingBottom: width > 768 ? 48 : 40,
-    justifyContent: "center",
+  container: {
     alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  logoContainer: {
+    width: 120,
+    height: 120,
+    backgroundColor: 'white',
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8,
   },
   logo: {
-    width: width > 768 ? 120 : 100,
-    height: width > 768 ? 120 : 100,
-    marginBottom: 20,
-    tintColor: "#fff",
-    opacity: 1,
+    width: 80,
+    height: 80,
+    resizeMode: 'contain',
   },
-  titleGraphic: {
-    fontSize: width > 768 ? 24 : 22,
-    fontWeight: "600",
+  title: {
+    fontSize: 22,
+    fontWeight: "700",
     color: "#fff",
     textAlign: "center",
     marginBottom: 8,
-    paddingHorizontal: 10,
   },
-  subtitleGraphic: {
-    fontSize: width > 768 ? 14 : 13,
-    color: "#fff",
+  subtitle: {
+    fontSize: 13,
+    color: "rgba(255, 255, 255, 0.9)",
     textAlign: "center",
-    opacity: 0.9,
-    paddingHorizontal: 20,
-    lineHeight: 20,
+    lineHeight: 18,
   },
 });

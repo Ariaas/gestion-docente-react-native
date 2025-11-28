@@ -3,24 +3,29 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
+  FlatList,
   TouchableOpacity,
-  TextInput,
   Modal,
   Alert,
+  ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { secciones, horarios } from "../data/mockData";
-import ActionButton from "../components/ActionButton";
 import SearchBar from "../components/SearchBar";
+import Card from "../components/Card";
+import InfoRow from "../components/InfoRow";
+import AddItemModal from "../components/AddItemModal";
+import { useTheme } from "../context/ThemeContext";
 
 export default function SeccionScreen() {
   const [searchText, setSearchText] = useState("");
-  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [showHorarioModal, setShowHorarioModal] = useState(false);
   const [selectedSeccion, setSelectedSeccion] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [items, setItems] = useState(secciones);
+  const { theme } = useTheme();
 
-  const filteredData = secciones.filter(
+  const filteredData = items.filter(
     (item) =>
       item.codigo.toLowerCase().includes(searchText.toLowerCase()) ||
       item.tipo.toLowerCase().includes(searchText.toLowerCase())
@@ -31,402 +36,252 @@ export default function SeccionScreen() {
     setShowHorarioModal(true);
   };
 
-  const handleEdit = (item) => {
-    Alert.alert("Modificar", `Editar: ${item.codigo}`);
-  };
-
-  const handleDelete = (item) => {
-    Alert.alert("Eliminar", `¿Está seguro de eliminar ${item.codigo}?`, [
-      { text: "Cancelar", style: "cancel" },
-      { text: "Eliminar", style: "destructive" },
-    ]);
-  };
-
   const getHorariosSeccion = (seccionId) => {
     return horarios.filter((h) => h.seccionId === seccionId);
   };
 
+  const handleAdd = () => {
+    setModalVisible(true);
+  };
+
+  const handleSubmit = (data) => {
+    const newItem = {
+      id: items.length + 1,
+      ...data
+    };
+    setItems([...items, newItem]);
+    setModalVisible(false);
+    Alert.alert("Éxito", "Sección registrada correctamente");
+  };
+
+  const renderItem = ({ item }) => (
+    <Card onPress={() => handleVerHorario(item)}>
+      <View style={styles.cardHeader}>
+        <View style={styles.iconContainer}>
+          <Ionicons name="people" size={24} color="#0d6efd" />
+        </View>
+        <View style={styles.headerText}>
+          <Text style={[styles.codigo, { color: theme.colors.text }]}>{item.codigo}</Text>
+          <Text style={styles.tipo}>{item.tipo}</Text>
+        </View>
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => handleVerHorario(item)}
+        >
+          <Ionicons name="calendar" size={20} color="#0d6efd" />
+        </TouchableOpacity>
+      </View>
+
+      <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
+
+      <InfoRow label="Estudiantes" value={item.cantidadEstudiantes} />
+      <InfoRow label="Año" value={item.ano} />
+    </Card>
+  );
+
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ padding: 20 }}
-    >
-      <View style={styles.header}>
-        <Text style={styles.title}>Gestionar Sección</Text>
-      </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.horarioButton}>
-          <Text style={styles.horarioButtonText}>Unir Horarios</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.addButton}>
-          <Text style={styles.addButtonText}>Registrar Sección</Text>
-        </TouchableOpacity>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.searchContainer, { backgroundColor: theme.colors.card, borderBottomColor: theme.colors.border }]}>
+        <SearchBar
+          value={searchText}
+          onChangeText={setSearchText}
+          placeholder="Buscar sección..."
+        />
       </View>
 
-      <View style={styles.controls}>
-        <View style={styles.leftControls}>
-          <Text style={styles.label}>Mostrar</Text>
-          <View style={styles.selectContainer}>
-            <TextInput
-              style={styles.select}
-              value={itemsPerPage.toString()}
-              editable={false}
-            />
+      <FlatList
+        data={filteredData}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={styles.listContainer}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <Ionicons name="search" size={48} color={theme.colors.textSecondary} />
+            <Text style={[styles.emptyStateText, { color: theme.colors.textSecondary }]}>No se encontraron secciones</Text>
           </View>
-          <Text style={styles.label}>registros</Text>
-        </View>
-        <View style={styles.searchContainer}>
-          <Text style={styles.label}>Buscar:</Text>
-          <SearchBar
-            value={searchText}
-            onChangeText={setSearchText}
-            placeholder=""
-          />
-        </View>
-      </View>
+        }
+      />
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={true}>
-        <View style={styles.tableContainer}>
-          <View style={styles.tableHeader}>
-            <Text style={[styles.headerCell, styles.codigoColumn]}>
-              CÓDIGO DE SECCIÓN
-            </Text>
-            <Text style={[styles.headerCell, styles.estudiantesColumn]}>
-              CANTIDAD DE ESTUDIANTES
-            </Text>
-            <Text style={[styles.headerCell, styles.anoColumn]}>AÑO</Text>
-            <Text style={[styles.headerCell, styles.tipoColumn]}>TIPO</Text>
-            <Text style={[styles.headerCell, styles.accionesColumn]}>
-              ACCIONES
-            </Text>
-          </View>
+      <TouchableOpacity style={styles.fab} onPress={handleAdd}>
+        <Ionicons name="add" size={24} color="white" />
+      </TouchableOpacity>
 
-          {filteredData.map((item, index) => (
-            <View
-              key={item.id}
-              style={[
-                styles.tableRow,
-                index % 2 === 0 ? styles.evenRow : styles.oddRow,
-              ]}
-            >
-              <Text style={[styles.cell, styles.codigoColumn]}>
-                {item.codigo}
-              </Text>
-              <Text style={[styles.cell, styles.estudiantesColumn]}>
-                {item.cantidadEstudiantes}
-              </Text>
-              <Text style={[styles.cell, styles.anoColumn]}>{item.ano}</Text>
-              <Text style={[styles.cell, styles.tipoColumn]}>{item.tipo}</Text>
-              <View
-                style={[styles.cell, styles.accionesColumn, styles.actionsCell]}
-              >
-                <ActionButton
-                  icon="eye"
-                  color="#0d6efd"
-                  onPress={() => handleVerHorario(item)}
-                />
-                <ActionButton
-                  icon="calendar"
-                  color="#6c757d"
-                  onPress={() => Alert.alert("Calendario", "Función simulada")}
-                />
-                <ActionButton
-                  icon="create"
-                  color="#ffc107"
-                  onPress={() => handleEdit(item)}
-                />
-                <ActionButton
-                  icon="trash"
-                  color="#dc3545"
-                  onPress={() => handleDelete(item)}
-                />
-              </View>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
-
-      <View style={styles.pagination}>
-        <Text style={styles.paginationText}>Mostrando 1 de 1</Text>
-        <View style={styles.paginationButtons}>
-          <TouchableOpacity style={styles.pageButton}>
-            <Text style={styles.pageButtonText}>Anterior</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.pageButton, styles.activePageButton]}
-          >
-            <Text style={[styles.pageButtonText, styles.activePageButtonText]}>
-              1
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.pageButton}>
-            <Text style={styles.pageButtonText}>Siguiente</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <AddItemModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSubmit={handleSubmit}
+        title="Registrar Sección"
+        fields={[
+          { 
+            name: 'codigo', 
+            label: 'Código', 
+            placeholder: 'Ej: INFO-01 o IIN2301',
+            regex: '^[A-Za-z]{2,3}-?[0-9]+$',
+            errorMsg: 'El código debe tener 2-3 letras seguidas de números (Ej: IN-1234 o IIN2301).',
+            required: true
+          },
+          { 
+            name: 'tipo', 
+            label: 'Tipo', 
+            placeholder: 'Ej: Regular',
+            regex: '^[a-zA-Z ]+$',
+            errorMsg: 'El tipo solo debe contener letras.',
+            required: true
+          },
+          { 
+            name: 'cantidadEstudiantes', 
+            label: 'Cantidad Estudiantes', 
+            placeholder: 'Ej: 30', 
+            keyboardType: 'numeric',
+            regex: '^[0-9]+$',
+            errorMsg: 'La cantidad debe ser un número.',
+            required: true
+          },
+          { 
+            name: 'ano', 
+            label: 'Año', 
+            placeholder: 'Ej: 2024', 
+            keyboardType: 'numeric',
+            regex: '^[0-9]{4}$',
+            errorMsg: 'El año debe tener 4 dígitos.',
+            required: true
+          },
+        ]}
+      />
 
       <Modal
         visible={showHorarioModal}
         animationType="slide"
-        transparent={true}
+        presentationStyle="pageSheet"
         onRequestClose={() => setShowHorarioModal(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
-                Horario de Sección {selectedSeccion?.codigo}
-              </Text>
-              <TouchableOpacity onPress={() => setShowHorarioModal(false)}>
-                <Ionicons name="close" size={28} color="#495057" />
-              </TouchableOpacity>
-            </View>
+        <View style={[styles.modalContainer, { backgroundColor: theme.colors.background }]}>
+          <View style={[styles.modalHeader, { backgroundColor: theme.colors.card, borderBottomColor: theme.colors.border }]}>
+            <Text style={[styles.modalTitle, { color: theme.colors.text }]}>
+              Horario - {selectedSeccion?.codigo}
+            </Text>
+            <TouchableOpacity 
+              style={styles.closeButton}
+              onPress={() => setShowHorarioModal(false)}
+            >
+              <Ionicons name="close-circle" size={30} color={theme.colors.textSecondary} />
+            </TouchableOpacity>
+          </View>
 
-            <ScrollView style={styles.modalBody}>
-              {selectedSeccion &&
-              getHorariosSeccion(selectedSeccion.id).length > 0 ? (
-                getHorariosSeccion(selectedSeccion.id).map((horario) => (
-                  <View key={horario.id} style={styles.horarioCard}>
-                    <View style={styles.horarioHeader}>
-                      <Text style={styles.horarioDia}>{horario.dia}</Text>
-                      <Text style={styles.horarioHora}>
-                        {horario.horaInicio} - {horario.horaFin}
-                      </Text>
+          <ScrollView contentContainerStyle={styles.modalBody}>
+            {selectedSeccion &&
+            getHorariosSeccion(selectedSeccion.id).length > 0 ? (
+              getHorariosSeccion(selectedSeccion.id).map((horario) => (
+                <View key={horario.id} style={[styles.horarioCard, { backgroundColor: theme.colors.card }]}>
+                  <View style={styles.horarioTimeContainer}>
+                    <Text style={styles.horarioDia}>{horario.dia}</Text>
+                    <Text style={styles.horarioHora}>
+                      {horario.horaInicio} - {horario.horaFin}
+                    </Text>
+                  </View>
+                  <View style={styles.horarioContent}>
+                    <Text style={[styles.materiaName, { color: theme.colors.text }]}>{horario.unidadCurricular}</Text>
+                    <View style={styles.horarioMetaRow}>
+                      <Ionicons name="person-outline" size={14} color={theme.colors.textSecondary} />
+                      <Text style={[styles.horarioMetaText, { color: theme.colors.textSecondary }]}>{horario.docente}</Text>
                     </View>
-                    <View style={styles.horarioDetails}>
-                      <View style={styles.horarioRow}>
-                        <Ionicons name="book" size={16} color="#0d6efd" />
-                        <Text style={styles.horarioText}>
-                          {horario.unidadCurricular}
-                        </Text>
-                      </View>
-                      <View style={styles.horarioRow}>
-                        <Ionicons name="person" size={16} color="#28a745" />
-                        <Text style={styles.horarioText}>
-                          {horario.docente}
-                        </Text>
-                      </View>
-                      <View style={styles.horarioRow}>
-                        <Ionicons name="location" size={16} color="#ffc107" />
-                        <Text style={styles.horarioText}>
-                          {horario.espacio}
-                        </Text>
-                      </View>
+                    <View style={styles.horarioMetaRow}>
+                      <Ionicons name="location-outline" size={14} color={theme.colors.textSecondary} />
+                      <Text style={[styles.horarioMetaText, { color: theme.colors.textSecondary }]}>{horario.espacio}</Text>
                     </View>
                   </View>
-                ))
-              ) : (
-                <View style={styles.emptyState}>
-                  <Ionicons name="calendar-outline" size={64} color="#dee2e6" />
-                  <Text style={styles.emptyStateText}>
-                    No hay horarios registrados
-                  </Text>
                 </View>
-              )}
-            </ScrollView>
-
-            <View style={styles.modalFooter}>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setShowHorarioModal(false)}
-              >
-                <Text style={styles.closeButtonText}>Cerrar</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+              ))
+            ) : (
+              <View style={styles.emptyState}>
+                <Ionicons name="calendar-outline" size={64} color={theme.colors.textSecondary} />
+                <Text style={[styles.emptyStateText, { color: theme.colors.textSecondary }]}>
+                  No hay horarios registrados
+                </Text>
+              </View>
+            )}
+          </ScrollView>
         </View>
       </Modal>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
-    padding: 20,
-  },
-  header: {
-    marginBottom: 15,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#0d6efd",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    gap: 10,
-    marginBottom: 20,
-    flexWrap: "wrap",
-  },
-  horarioButton: {
-    backgroundColor: "#0d6efd",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 6,
-    marginRight: 10,
-  },
-  horarioButtonText: {
-    color: "white",
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  addButton: {
-    backgroundColor: "#28a745",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 6,
-  },
-  addButtonText: {
-    color: "white",
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  controls: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 8,
-  },
-  leftControls: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  label: {
-    fontSize: 14,
-    color: "#495057",
-    marginRight: 8,
-  },
-  selectContainer: {
-    marginRight: 8,
-  },
-  select: {
-    borderWidth: 1,
-    borderColor: "#dee2e6",
-    borderRadius: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    width: 60,
-    fontSize: 14,
-    backgroundColor: "white",
   },
   searchContainer: {
+    padding: 16,
+    borderBottomWidth: 1,
+  },
+  listContainer: {
+    padding: 16,
+    paddingBottom: 80,
+  },
+  cardHeader: {
     flexDirection: "row",
     alignItems: "center",
-    width: 250,
+    marginBottom: 12,
   },
-  tableContainer: {
-    backgroundColor: "white",
-    borderRadius: 8,
-    overflow: "hidden",
-    minWidth: "100%",
-  },
-  tableHeader: {
-    flexDirection: "row",
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: "#e7f1ff",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#dee2e6",
-  },
-  headerCell: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#495057",
-    paddingHorizontal: 12,
-    textAlign: "center",
-  },
-  tableRow: {
-    flexDirection: "row",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#dee2e6",
-  },
-  evenRow: {
-    backgroundColor: "#f8f9fa",
-  },
-  oddRow: {
-    backgroundColor: "white",
-  },
-  cell: {
-    fontSize: 14,
-    color: "#212529",
-    paddingHorizontal: 12,
-    textAlign: "center",
-  },
-  codigoColumn: {
-    width: 200,
-  },
-  estudiantesColumn: {
-    width: 200,
-  },
-  anoColumn: {
-    width: 120,
-  },
-  tipoColumn: {
-    width: 120,
-  },
-  accionesColumn: {
-    width: 200,
-  },
-  actionsCell: {
-    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    marginRight: 12,
   },
-  pagination: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 20,
-    backgroundColor: "white",
-    padding: 15,
+  headerText: {
+    flex: 1,
+  },
+  codigo: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  tipo: {
+    fontSize: 14,
+    color: "#6c757d",
+  },
+  actionButton: {
+    padding: 8,
+    backgroundColor: "#e7f1ff",
     borderRadius: 8,
   },
-  paginationText: {
-    fontSize: 14,
-    color: "#495057",
+  divider: {
+    height: 1,
+    marginVertical: 12,
   },
-  paginationButtons: {
-    flexDirection: "row",
-    gap: 5,
+  emptyState: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
   },
-  pageButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: "#dee2e6",
-    backgroundColor: "white",
-    marginHorizontal: 2,
+  emptyStateText: {
+    marginTop: 10,
+    fontSize: 16,
   },
-  activePageButton: {
+  fab: {
+    position: "absolute",
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: "#0d6efd",
-    borderColor: "#0d6efd",
-  },
-  pageButtonText: {
-    fontSize: 14,
-    color: "#495057",
-  },
-  activePageButtonText: {
-    color: "white",
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
   },
-  modalContent: {
-    backgroundColor: "white",
-    borderRadius: 12,
-    width: "90%",
-    maxHeight: "80%",
-    overflow: "hidden",
+  // Modal Styles
+  modalContainer: {
+    flex: 1,
   },
   modalHeader: {
     flexDirection: "row",
@@ -434,78 +289,60 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "#dee2e6",
-    backgroundColor: "#f8f9fa",
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#212529",
+    fontSize: 18,
+    fontWeight: "700",
   },
   modalBody: {
-    padding: 20,
+    padding: 16,
   },
   horarioCard: {
-    backgroundColor: "#f8f9fa",
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 15,
-    borderLeftWidth: 4,
-    borderLeftColor: "#0d6efd",
-  },
-  horarioHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    borderRadius: 12,
     marginBottom: 12,
+    flexDirection: "row",
+    overflow: "hidden",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  horarioTimeContainer: {
+    backgroundColor: "#0d6efd",
+    padding: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 80,
   },
   horarioDia: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#212529",
+    color: "white",
+    fontWeight: "700",
+    fontSize: 16,
+    marginBottom: 4,
   },
   horarioHora: {
-    fontSize: 14,
-    color: "#6c757d",
+    color: "rgba(255,255,255,0.9)",
+    fontSize: 12,
+    textAlign: "center",
+  },
+  horarioContent: {
+    flex: 1,
+    padding: 12,
+    justifyContent: "center",
+  },
+  materiaName: {
+    fontSize: 16,
     fontWeight: "600",
+    marginBottom: 8,
   },
-  horarioDetails: {
-    gap: 8,
-  },
-  horarioRow: {
+  horarioMetaRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    marginBottom: 4,
   },
-  horarioText: {
-    fontSize: 14,
-    color: "#495057",
-  },
-  emptyState: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 40,
-  },
-  emptyStateText: {
-    fontSize: 16,
-    color: "#6c757d",
-    marginTop: 12,
-  },
-  modalFooter: {
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: "#dee2e6",
-    backgroundColor: "#f8f9fa",
-  },
-  closeButton: {
-    backgroundColor: "#6c757d",
-    paddingVertical: 12,
-    borderRadius: 6,
-    alignItems: "center",
-  },
-  closeButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
+  horarioMetaText: {
+    marginLeft: 6,
+    fontSize: 13,
   },
 });

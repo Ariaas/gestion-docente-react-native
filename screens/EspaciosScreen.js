@@ -3,297 +3,245 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
+  FlatList,
   TouchableOpacity,
-  TextInput,
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { espaciosFisicos } from "../data/mockData";
-import ActionButton from "../components/ActionButton";
+import { espacios } from "../data/mockData";
 import SearchBar from "../components/SearchBar";
+import Card from "../components/Card";
+import InfoRow from "../components/InfoRow";
+import AddItemModal from "../components/AddItemModal";
+import { useTheme } from "../context/ThemeContext";
 
 export default function EspaciosScreen() {
   const [searchText, setSearchText] = useState("");
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [items, setItems] = useState(espacios);
+  const { theme } = useTheme();
 
-  const handleEdit = (item) => {
-    Alert.alert("Modificar", `Editar: ${item.codigo}`);
-  };
-
-  const handleDelete = (item) => {
-    Alert.alert("Eliminar", `¿Está seguro de eliminar ${item.codigo}?`, [
-      { text: "Cancelar", style: "cancel" },
-      { text: "Eliminar", style: "destructive" },
-    ]);
-  };
-
-  const filteredData = espaciosFisicos.filter(
+  const filteredData = items.filter(
     (item) =>
-      item.codigo.toLowerCase().includes(searchText.toLowerCase()) ||
-      item.tipo.toLowerCase().includes(searchText.toLowerCase()) ||
-      item.edificio.toLowerCase().includes(searchText.toLowerCase())
+      item.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.codigo.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  const handleAdd = () => {
+    setModalVisible(true);
+  };
+
+  const handleSubmit = (data) => {
+    const newItem = {
+      id: items.length + 1,
+      ...data,
+      estado: 'Disponible'
+    };
+    setItems([...items, newItem]);
+    setModalVisible(false);
+    Alert.alert("Éxito", "Espacio registrado correctamente");
+  };
+
+  const renderItem = ({ item }) => (
+    <Card onPress={() => Alert.alert("Detalles", item.nombre)}>
+      <View style={styles.cardHeader}>
+        <View style={styles.iconContainer}>
+          <Ionicons name="business" size={24} color="#1cc88a" />
+        </View>
+        <View style={styles.headerText}>
+          <Text style={[styles.nombre, { color: theme.colors.text }]}>{item.nombre}</Text>
+          <Text style={styles.codigo}>{item.codigo}</Text>
+        </View>
+        <View style={[styles.badge, item.estado === 'Disponible' ? styles.activeBadge : styles.inactiveBadge]}>
+           <Text style={[styles.badgeText, item.estado === 'Disponible' ? styles.activeBadgeText : styles.inactiveBadgeText]}>
+             {item.estado}
+           </Text>
+        </View>
+      </View>
+
+      <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
+
+      <InfoRow label="Tipo" value={item.tipo} />
+      <InfoRow label="Capacidad" value={`${item.capacidad} personas`} />
+      <InfoRow label="Ubicación" value={`Edif. ${item.edificio}, Piso ${item.piso}`} />
+    </Card>
   );
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ padding: 20 }}
-    >
-      <View style={styles.header}>
-        <Text style={styles.title}>Gestionar Espacios</Text>
-      </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.addButton}>
-          <Text style={styles.addButtonText}>Registrar Espacio</Text>
-        </TouchableOpacity>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.searchContainer, { backgroundColor: theme.colors.card, borderBottomColor: theme.colors.border }]}>
+        <SearchBar
+          value={searchText}
+          onChangeText={setSearchText}
+          placeholder="Buscar espacio..."
+        />
       </View>
 
-      <View style={styles.controls}>
-        <View style={styles.leftControls}>
-          <Text style={styles.label}>Mostrar</Text>
-          <View style={styles.selectContainer}>
-            <TextInput
-              style={styles.select}
-              value={itemsPerPage.toString()}
-              editable={false}
-            />
+      <FlatList
+        data={filteredData}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={styles.listContainer}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <Ionicons name="search" size={48} color={theme.colors.textSecondary} />
+            <Text style={[styles.emptyStateText, { color: theme.colors.textSecondary }]}>No se encontraron espacios</Text>
           </View>
-          <Text style={styles.label}>registros</Text>
-        </View>
-        <View style={styles.searchContainer}>
-          <Text style={styles.label}>Buscar:</Text>
-          <SearchBar
-            value={searchText}
-            onChangeText={setSearchText}
-            placeholder=""
-          />
-        </View>
-      </View>
+        }
+      />
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={true}>
-        <View style={styles.tableContainer}>
-          <View style={styles.tableHeader}>
-            <Text style={[styles.headerCell, styles.codigoColumn]}>CÓDIGO</Text>
-            <Text style={[styles.headerCell, styles.tipoColumn]}>TIPO</Text>
-            <Text style={[styles.headerCell, styles.edificioColumn]}>
-              EDIFICIO
-            </Text>
-            <Text style={[styles.headerCell, styles.accionesColumn]}>
-              ACCIONES
-            </Text>
-          </View>
+      <TouchableOpacity style={styles.fab} onPress={handleAdd}>
+        <Ionicons name="add" size={24} color="white" />
+      </TouchableOpacity>
 
-          {filteredData.map((item, index) => (
-            <View
-              key={item.id}
-              style={[
-                styles.tableRow,
-                index % 2 === 0 ? styles.evenRow : styles.oddRow,
-              ]}
-            >
-              <Text style={[styles.cell, styles.codigoColumn]}>
-                {item.codigo}
-              </Text>
-              <Text style={[styles.cell, styles.tipoColumn]}>{item.tipo}</Text>
-              <Text style={[styles.cell, styles.edificioColumn]}>
-                {item.edificio}
-              </Text>
-              <View
-                style={[styles.cell, styles.accionesColumn, styles.actionsCell]}
-              >
-                <ActionButton
-                  icon="create"
-                  color="#ffc107"
-                  onPress={() => handleEdit(item)}
-                />
-                <ActionButton
-                  icon="trash"
-                  color="#dc3545"
-                  onPress={() => handleDelete(item)}
-                />
-              </View>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
-
-      <View style={styles.pagination}>
-        <Text style={styles.paginationText}>Mostrando 1 de 1</Text>
-        <View style={styles.paginationButtons}>
-          <TouchableOpacity style={styles.pageButton}>
-            <Text style={styles.pageButtonText}>Anterior</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.pageButton, styles.activePageButton]}
-          >
-            <Text style={[styles.pageButtonText, styles.activePageButtonText]}>
-              1
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.pageButton}>
-            <Text style={styles.pageButtonText}>Siguiente</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ScrollView>
+      <AddItemModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSubmit={handleSubmit}
+        title="Registrar Espacio"
+        fields={[
+          { 
+            name: 'nombre', 
+            label: 'Nombre', 
+            placeholder: 'Ej: Laboratorio 1',
+            regex: '^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$',
+            errorMsg: 'El nombre contiene caracteres inválidos.',
+            required: true
+          },
+          { 
+            name: 'codigo', 
+            label: 'Código', 
+            placeholder: 'Ej: LAB-01 o H-21',
+            regex: '^[A-Za-z]+-[0-9]+$',
+            errorMsg: 'El código debe tener el formato Letras-Números (Ej: H-21).',
+            required: true
+          },
+          { 
+            name: 'tipo', 
+            label: 'Tipo', 
+            placeholder: 'Ej: Laboratorio',
+            regex: '^[a-zA-Z ]+$',
+            errorMsg: 'El tipo solo debe contener letras.',
+            required: true
+          },
+          { 
+            name: 'capacidad', 
+            label: 'Capacidad', 
+            placeholder: 'Ej: 30', 
+            keyboardType: 'numeric',
+            regex: '^[0-9]+$',
+            errorMsg: 'La capacidad debe ser un número.',
+            required: true
+          },
+          { 
+            name: 'edificio', 
+            label: 'Edificio', 
+            placeholder: 'Ej: A',
+            regex: '^[a-zA-Z0-9]+$',
+            errorMsg: 'El edificio debe ser alfanumérico.',
+            required: true
+          },
+          { 
+            name: 'piso', 
+            label: 'Piso', 
+            placeholder: 'Ej: 1', 
+            keyboardType: 'numeric',
+            regex: '^[0-9]+$',
+            errorMsg: 'El piso debe ser un número.',
+            required: true
+          },
+        ]}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
-    padding: 20,
-  },
-  header: {
-    marginBottom: 15,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#0d6efd",
-  },
-  buttonContainer: {
-    marginBottom: 20,
-  },
-  addButton: {
-    backgroundColor: "#28a745",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 6,
-  },
-  addButtonText: {
-    color: "white",
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  controls: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 8,
-  },
-  leftControls: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  label: {
-    fontSize: 14,
-    color: "#495057",
-    marginRight: 8,
-  },
-  selectContainer: {
-    marginRight: 8,
-  },
-  select: {
-    borderWidth: 1,
-    borderColor: "#dee2e6",
-    borderRadius: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    width: 60,
-    fontSize: 14,
-    backgroundColor: "white",
   },
   searchContainer: {
+    padding: 16,
+    borderBottomWidth: 1,
+  },
+  listContainer: {
+    padding: 16,
+    paddingBottom: 80,
+  },
+  cardHeader: {
     flexDirection: "row",
     alignItems: "center",
-    width: 250,
+    marginBottom: 12,
   },
-  tableContainer: {
-    backgroundColor: "white",
-    borderRadius: 8,
-    overflow: "hidden",
-    minWidth: "100%",
-  },
-  tableHeader: {
-    flexDirection: "row",
-    backgroundColor: "#e7f1ff",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#dee2e6",
-  },
-  headerCell: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#495057",
-    paddingHorizontal: 12,
-    textAlign: "center",
-  },
-  tableRow: {
-    flexDirection: "row",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#dee2e6",
-  },
-  evenRow: {
-    backgroundColor: "#f8f9fa",
-  },
-  oddRow: {
-    backgroundColor: "white",
-  },
-  cell: {
-    fontSize: 14,
-    color: "#212529",
-    paddingHorizontal: 12,
-    textAlign: "center",
-  },
-  codigoColumn: {
-    width: 200,
-  },
-  tipoColumn: {
-    width: 200,
-  },
-  edificioColumn: {
-    width: 200,
-  },
-  accionesColumn: {
-    width: 150,
-  },
-  actionsCell: {
-    flexDirection: "row",
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#d4edda",
     justifyContent: "center",
     alignItems: "center",
+    marginRight: 12,
   },
-  pagination: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 20,
-    backgroundColor: "white",
-    padding: 15,
+  headerText: {
+    flex: 1,
+  },
+  nombre: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  codigo: {
+    fontSize: 14,
+    color: "#6c757d",
+  },
+  badge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     borderRadius: 8,
   },
-  paginationText: {
-    fontSize: 14,
-    color: "#495057",
+  activeBadge: {
+    backgroundColor: "#d1e7dd",
   },
-  paginationButtons: {
-    flexDirection: "row",
-    gap: 5,
+  inactiveBadge: {
+    backgroundColor: "#f8d7da",
   },
-  pageButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: "#dee2e6",
-    backgroundColor: "white",
-    marginHorizontal: 2,
+  badgeText: {
+    fontSize: 12,
+    fontWeight: "600",
   },
-  activePageButton: {
+  activeBadgeText: {
+    color: "#0f5132",
+  },
+  inactiveBadgeText: {
+    color: "#842029",
+  },
+  divider: {
+    height: 1,
+    marginVertical: 12,
+  },
+  emptyState: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+  },
+  emptyStateText: {
+    marginTop: 10,
+    fontSize: 16,
+  },
+  fab: {
+    position: "absolute",
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: "#0d6efd",
-    borderColor: "#0d6efd",
-  },
-  pageButtonText: {
-    fontSize: 14,
-    color: "#495057",
-  },
-  activePageButtonText: {
-    color: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
   },
 });

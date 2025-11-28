@@ -1,60 +1,70 @@
 import React, { useState } from "react";
-import { View, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import { View, StyleSheet, KeyboardAvoidingView, Platform, Dimensions } from "react-native";
+import { StatusBar } from 'expo-status-bar';
 import LoginHeader from "../components/LoginHeader";
 import LoginForm from "../components/LoginForm";
+import { useTheme } from "../context/ThemeContext";
+
+const { height } = Dimensions.get('window');
 
 export default function LoginScreen({ navigation }) {
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [contraseniaUsuario, setContraseniaUsuario] = useState("");
+  const { theme } = useTheme();
 
   const handleLogin = () => {
     navigation.navigate("Dashboard");
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={"padding"}
-      style={styles.container}
-    >
-      <View style={styles.loginContainer}>
+    <View style={styles.container}>
+      <StatusBar style="light" />
+      
+      {/* Top Section - Blue */}
+      <View style={styles.topSection}>
         <LoginHeader />
+      </View>
 
-        <View style={styles.formCard}>
+      {/* Bottom Section - White/Dark */}
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={[styles.bottomSection, { backgroundColor: theme.colors.background }]}
+      >
+        <View style={styles.formContainer}>
           <LoginForm
             nombreUsuario={nombreUsuario}
             setNombreUsuario={setNombreUsuario}
             contraseniaUsuario={contraseniaUsuario}
             setContraseniaUsuario={setContraseniaUsuario}
             onLogin={handleLogin}
+            navigation={navigation}
           />
         </View>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#0d6efd",
   },
-  loginContainer: {
+  topSection: {
+    flex: 0.45, // Takes up 45% of the screen
+    backgroundColor: "#0d6efd",
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bottomSection: {
+    flex: 0.55, // Takes up 55% of the screen
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    overflow: 'hidden', // Ensures content respects the rounded corners
+  },
+  formContainer: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
-    justifyContent: "center",
-    padding: 20,
-  },
-  formCard: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    alignSelf: "stretch",
-    maxWidth: 540,
-    alignSelf: "center",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    paddingHorizontal: 20,
+    paddingTop: 40,
   },
 });

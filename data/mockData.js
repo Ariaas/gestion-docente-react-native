@@ -8,6 +8,9 @@ export const unidadesCurriculares = [
     area: 'Formación Profesional',
     fase: 'Fase I',
     estado: 'Activa',
+    hte: 90,
+    hta: 60,
+    uc: 4,
   },
   {
     id: 2,
@@ -18,6 +21,9 @@ export const unidadesCurriculares = [
     area: 'Formación Básica',
     fase: 'Fase I',
     estado: 'Activa',
+    hte: 80,
+    hta: 50,
+    uc: 4,
   },
   {
     id: 3,
@@ -28,6 +34,9 @@ export const unidadesCurriculares = [
     area: 'Formación Profesional',
     fase: 'Fase I',
     estado: 'Activa',
+    hte: 70,
+    hta: 40,
+    uc: 3,
   },
   {
     id: 4,
@@ -38,6 +47,9 @@ export const unidadesCurriculares = [
     area: 'Formación Profesional',
     fase: 'Fase II',
     estado: 'Activa',
+    hte: 90,
+    hta: 60,
+    uc: 4,
   },
   {
     id: 5,
@@ -48,6 +60,9 @@ export const unidadesCurriculares = [
     area: 'Formación Profesional',
     fase: 'Fase I',
     estado: 'Activa',
+    hte: 90,
+    hta: 60,
+    uc: 4,
   },
   {
     id: 6,
@@ -58,6 +73,9 @@ export const unidadesCurriculares = [
     area: 'Formación Profesional',
     fase: 'Fase II',
     estado: 'Activa',
+    hte: 80,
+    hta: 50,
+    uc: 3,
   },
   {
     id: 7,
@@ -68,6 +86,9 @@ export const unidadesCurriculares = [
     area: 'Formación General',
     fase: 'Anual',
     estado: 'Activa',
+    hte: 50,
+    hta: 30,
+    uc: 2,
   },
   {
     id: 8,
@@ -78,6 +99,9 @@ export const unidadesCurriculares = [
     area: 'Formación Profesional',
     fase: 'Fase I',
     estado: 'Inactiva',
+    hte: 90,
+    hta: 60,
+    uc: 4,
   },
   {
     id: 9,
@@ -88,6 +112,9 @@ export const unidadesCurriculares = [
     area: 'Formación Profesional',
     fase: 'Anual',
     estado: 'Activa',
+    hte: 120,
+    hta: 80,
+    uc: 5,
   },
   {
     id: 10,
@@ -98,6 +125,9 @@ export const unidadesCurriculares = [
     area: 'Formación Profesional',
     fase: 'Fase I',
     estado: 'Activa',
+    hte: 90,
+    hta: 60,
+    uc: 4,
   },
 ];
 
@@ -178,6 +208,10 @@ export const mallasCurriculares = [
     cohorte: 3,
     descripcion: 'Malla 2025',
     estado: 'Activa',
+    pnf: 'Informática',
+    trayecto: '4 Años',
+    duracion: '4 Años',
+    titulo: 'Ingeniero en Informática',
   },
 ];
 
@@ -282,7 +316,7 @@ export const secciones = [
   {
     id: 1,
     codigo: 'IIN3101',
-    cantidadEstudiantes: 'N/A',
+    cantidadEstudiantes: 35,
     ano: '2025',
     tipo: 'Regular',
     estado: 'Activa',
@@ -290,7 +324,7 @@ export const secciones = [
   {
     id: 2,
     codigo: 'IIN3102',
-    cantidadEstudiantes: 'N/A',
+    cantidadEstudiantes: 32,
     ano: '2025',
     tipo: 'Regular',
     estado: 'Activa',
@@ -298,7 +332,7 @@ export const secciones = [
   {
     id: 3,
     codigo: 'IIN3103',
-    cantidadEstudiantes: 'N/A',
+    cantidadEstudiantes: 28,
     ano: '2025',
     tipo: 'Regular',
     estado: 'Activa',
@@ -306,7 +340,7 @@ export const secciones = [
   {
     id: 4,
     codigo: 'IIN3104',
-    cantidadEstudiantes: 'N/A',
+    cantidadEstudiantes: 30,
     ano: '2025',
     tipo: 'Regular',
     estado: 'Activa',
@@ -314,7 +348,7 @@ export const secciones = [
   {
     id: 5,
     codigo: 'IIN3113',
-    cantidadEstudiantes: 'N/A',
+    cantidadEstudiantes: 25,
     ano: '2025',
     tipo: 'Regular',
     estado: 'Activa',

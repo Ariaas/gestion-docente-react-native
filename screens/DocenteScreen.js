@@ -3,366 +3,239 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
+  FlatList,
   TouchableOpacity,
-  TextInput,
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { docentesCompleto } from "../data/mockData";
-import ActionButton from "../components/ActionButton";
+import { docentes } from "../data/mockData";
 import SearchBar from "../components/SearchBar";
+import Card from "../components/Card";
+import InfoRow from "../components/InfoRow";
+import AddItemModal from "../components/AddItemModal";
+import { useTheme } from "../context/ThemeContext";
 
 export default function DocenteScreen() {
   const [searchText, setSearchText] = useState("");
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [items, setItems] = useState(docentes);
+  const { theme } = useTheme();
 
-  const handleEdit = (item) => {
-    Alert.alert("Modificar", `Editar: ${item.nombre} ${item.apellido}`);
-  };
-
-  const handleDelete = (item) => {
-    Alert.alert(
-      "Eliminar",
-      `¿Está seguro de eliminar ${item.nombre} ${item.apellido}?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Eliminar", style: "destructive" },
-      ]
-    );
-  };
-
-  const filteredData = docentesCompleto.filter(
+  const filteredData = items.filter(
     (item) =>
-      item.cedula.toLowerCase().includes(searchText.toLowerCase()) ||
-      item.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
-      item.apellido.toLowerCase().includes(searchText.toLowerCase()) ||
-      item.correo.toLowerCase().includes(searchText.toLowerCase())
+      item.nombreCompleto.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.cedula.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  const handleAdd = () => {
+    setModalVisible(true);
+  };
+
+  const handleSubmit = (data) => {
+    const newItem = {
+      id: items.length + 1,
+      nombreCompleto: data.nombre,
+      ...data,
+      estado: 'Activo'
+    };
+    setItems([...items, newItem]);
+    setModalVisible(false);
+    Alert.alert("Éxito", "Docente registrado correctamente");
+  };
+
+  const renderItem = ({ item }) => (
+    <Card onPress={() => Alert.alert("Detalles", item.nombreCompleto)}>
+      <View style={styles.cardHeader}>
+        <View style={styles.iconContainer}>
+          <Ionicons name="person" size={24} color="#4e73df" />
+        </View>
+        <View style={styles.headerText}>
+          <Text style={[styles.nombre, { color: theme.colors.text }]}>{item.nombreCompleto}</Text>
+          <Text style={styles.cedula}>{item.cedula}</Text>
+        </View>
+        <View style={[styles.badge, item.estado === 'Activo' ? styles.activeBadge : styles.inactiveBadge]}>
+           <Text style={[styles.badgeText, item.estado === 'Activo' ? styles.activeBadgeText : styles.inactiveBadgeText]}>
+             {item.estado}
+           </Text>
+        </View>
+      </View>
+
+      <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
+
+      <InfoRow label="Email" value={item.email} />
+      <InfoRow label="Teléfono" value={item.telefono} />
+      <InfoRow label="Especialidad" value={item.especialidad} />
+    </Card>
   );
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ padding: 20 }}
-    >
-      <View style={styles.header}>
-        <Text style={styles.title}>Gestionar Docente</Text>
-      </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.addButton}>
-          <Text style={styles.addButtonText}>Registrar Docente</Text>
-        </TouchableOpacity>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.searchContainer, { backgroundColor: theme.colors.card, borderBottomColor: theme.colors.border }]}>
+        <SearchBar
+          value={searchText}
+          onChangeText={setSearchText}
+          placeholder="Buscar docente..."
+        />
       </View>
 
-      <View style={styles.controls}>
-        <View style={styles.leftControls}>
-          <Text style={styles.label}>Mostrar</Text>
-          <View style={styles.selectContainer}>
-            <TextInput
-              style={styles.select}
-              value={itemsPerPage.toString()}
-              editable={false}
-            />
+      <FlatList
+        data={filteredData}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={styles.listContainer}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <Ionicons name="search" size={48} color={theme.colors.textSecondary} />
+            <Text style={[styles.emptyStateText, { color: theme.colors.textSecondary }]}>No se encontraron docentes</Text>
           </View>
-          <Text style={styles.label}>registros</Text>
-        </View>
-        <View style={styles.searchContainer}>
-          <Text style={styles.label}>Buscar:</Text>
-          <SearchBar
-            value={searchText}
-            onChangeText={setSearchText}
-            placeholder=""
-          />
-        </View>
-      </View>
+        }
+      />
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={true}>
-        <View style={styles.tableContainer}>
-          <View style={styles.tableHeader}>
-            <Text style={[styles.headerCell, styles.cedulaColumn]}>CÉDULA</Text>
-            <Text style={[styles.headerCell, styles.apellidoColumn]}>
-              APELLIDO
-            </Text>
-            <Text style={[styles.headerCell, styles.nombreColumn]}>NOMBRE</Text>
-            <Text style={[styles.headerCell, styles.correoColumn]}>CORREO</Text>
-            <Text style={[styles.headerCell, styles.categoriaColumn]}>
-              CATEGORÍA
-            </Text>
-            <Text style={[styles.headerCell, styles.dedicacionColumn]}>
-              DEDICACIÓN
-            </Text>
-            <Text style={[styles.headerCell, styles.condicionColumn]}>
-              CONDICIÓN
-            </Text>
-            <Text style={[styles.headerCell, styles.estadoColumn]}>ESTADO</Text>
-            <Text style={[styles.headerCell, styles.accionesColumn]}>
-              ACCIONES
-            </Text>
-          </View>
+      <TouchableOpacity style={styles.fab} onPress={handleAdd}>
+        <Ionicons name="add" size={24} color="white" />
+      </TouchableOpacity>
 
-          {filteredData.map((item, index) => (
-            <View
-              key={item.id}
-              style={[
-                styles.tableRow,
-                index % 2 === 0 ? styles.evenRow : styles.oddRow,
-              ]}
-            >
-              <Text style={[styles.cell, styles.cedulaColumn]}>
-                {item.cedula}
-              </Text>
-              <Text style={[styles.cell, styles.apellidoColumn]}>
-                {item.apellido}
-              </Text>
-              <Text style={[styles.cell, styles.nombreColumn]}>
-                {item.nombre}
-              </Text>
-              <Text style={[styles.cell, styles.correoColumn]}>
-                {item.correo}
-              </Text>
-              <Text style={[styles.cell, styles.categoriaColumn]}>
-                {item.categoria}
-              </Text>
-              <Text style={[styles.cell, styles.dedicacionColumn]}>
-                {item.dedicacion}
-              </Text>
-              <Text style={[styles.cell, styles.condicionColumn]}>
-                {item.condicion}
-              </Text>
-              <View style={[styles.cell, styles.estadoColumn]}>
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{item.estado}</Text>
-                </View>
-              </View>
-              <View
-                style={[styles.cell, styles.accionesColumn, styles.actionsCell]}
-              >
-                <ActionButton
-                  icon="create"
-                  color="#ffc107"
-                  onPress={() => handleEdit(item)}
-                />
-                <ActionButton
-                  icon="power"
-                  color="#dc3545"
-                  onPress={() => handleDelete(item)}
-                />
-                <ActionButton
-                  icon="eye"
-                  color="#0d6efd"
-                  onPress={() =>
-                    Alert.alert("Ver", `${item.nombre} ${item.apellido}`)
-                  }
-                />
-              </View>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
-
-      <View style={styles.pagination}>
-        <Text style={styles.paginationText}>Mostrando 1 de 1</Text>
-        <View style={styles.paginationButtons}>
-          <TouchableOpacity style={styles.pageButton}>
-            <Text style={styles.pageButtonText}>Anterior</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.pageButton, styles.activePageButton]}
-          >
-            <Text style={[styles.pageButtonText, styles.activePageButtonText]}>
-              1
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.pageButton}>
-            <Text style={styles.pageButtonText}>Siguiente</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ScrollView>
+      <AddItemModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSubmit={handleSubmit}
+        title="Registrar Docente"
+        fields={[
+          { 
+            name: 'nombre', 
+            label: 'Nombre Completo', 
+            placeholder: 'Ej: Juan Pérez',
+            regex: '^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$',
+            errorMsg: 'El nombre solo debe contener letras.',
+            required: true
+          },
+          { 
+            name: 'cedula', 
+            label: 'Cédula', 
+            placeholder: 'Ej: V-12345678', 
+            keyboardType: 'numeric',
+            regex: '^[vVeE]-[0-9]{6,9}$',
+            errorMsg: 'La cédula debe tener el formato V-12345678 o E-12345678.',
+            required: true
+          },
+          { 
+            name: 'email', 
+            label: 'Correo Electrónico', 
+            placeholder: 'Ej: juan@uptaeb.edu.ve', 
+            keyboardType: 'email-address',
+            regex: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$',
+            errorMsg: 'Ingrese un correo electrónico válido.',
+            required: true
+          },
+          { 
+            name: 'telefono', 
+            label: 'Teléfono', 
+            placeholder: 'Ej: 0412-1234567', 
+            keyboardType: 'phone-pad',
+            regex: '^[0-9]{4}-[0-9]{7}$',
+            errorMsg: 'El teléfono debe tener el formato 0412-1234567.',
+            required: true
+          },
+          { 
+            name: 'especialidad', 
+            label: 'Especialidad', 
+            placeholder: 'Ej: Informática',
+            regex: '^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$',
+            errorMsg: 'La especialidad solo debe contener letras.',
+            required: true
+          },
+        ]}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
-    padding: 20,
-  },
-  header: {
-    marginBottom: 15,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#0d6efd",
-  },
-  buttonContainer: {
-    marginBottom: 20,
-  },
-  addButton: {
-    backgroundColor: "#28a745",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 6,
-  },
-  addButtonText: {
-    color: "white",
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  controls: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 8,
-  },
-  leftControls: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  label: {
-    fontSize: 14,
-    color: "#495057",
-    marginRight: 8,
-  },
-  selectContainer: {
-    marginRight: 8,
-  },
-  select: {
-    borderWidth: 1,
-    borderColor: "#dee2e6",
-    borderRadius: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    width: 60,
-    fontSize: 14,
-    backgroundColor: "white",
   },
   searchContainer: {
+    padding: 16,
+    borderBottomWidth: 1,
+  },
+  listContainer: {
+    padding: 16,
+    paddingBottom: 80,
+  },
+  cardHeader: {
     flexDirection: "row",
     alignItems: "center",
-    width: 250,
+    marginBottom: 12,
   },
-  tableContainer: {
-    backgroundColor: "white",
-    borderRadius: 8,
-    overflow: "hidden",
-    minWidth: "100%",
-  },
-  tableHeader: {
-    flexDirection: "row",
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: "#e7f1ff",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#dee2e6",
-  },
-  headerCell: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#495057",
-    paddingHorizontal: 12,
-    textAlign: "center",
-  },
-  tableRow: {
-    flexDirection: "row",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#dee2e6",
-  },
-  evenRow: {
-    backgroundColor: "#f8f9fa",
-  },
-  oddRow: {
-    backgroundColor: "white",
-  },
-  cell: {
-    fontSize: 14,
-    color: "#212529",
-    paddingHorizontal: 12,
-    textAlign: "center",
-  },
-  cedulaColumn: {
-    width: 120,
-  },
-  apellidoColumn: {
-    width: 120,
-  },
-  nombreColumn: {
-    width: 120,
-  },
-  correoColumn: {
-    width: 200,
-  },
-  categoriaColumn: {
-    width: 120,
-  },
-  dedicacionColumn: {
-    width: 150,
-  },
-  condicionColumn: {
-    width: 120,
-  },
-  estadoColumn: {
-    width: 100,
-  },
-  accionesColumn: {
-    width: 150,
-  },
-  badge: {
-    backgroundColor: "#28a745",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-    alignSelf: "center",
-  },
-  badgeText: {
-    color: "white",
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  actionsCell: {
-    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    marginRight: 12,
   },
-  pagination: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 20,
-    backgroundColor: "white",
-    padding: 15,
+  headerText: {
+    flex: 1,
+  },
+  nombre: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  cedula: {
+    fontSize: 14,
+    color: "#6c757d",
+  },
+  badge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     borderRadius: 8,
   },
-  paginationText: {
-    fontSize: 14,
-    color: "#495057",
+  activeBadge: {
+    backgroundColor: "#d1e7dd",
   },
-  paginationButtons: {
-    flexDirection: "row",
-    gap: 5,
+  inactiveBadge: {
+    backgroundColor: "#f8d7da",
   },
-  pageButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: "#dee2e6",
-    backgroundColor: "white",
-    marginHorizontal: 2,
+  badgeText: {
+    fontSize: 12,
+    fontWeight: "600",
   },
-  activePageButton: {
+  activeBadgeText: {
+    color: "#0f5132",
+  },
+  inactiveBadgeText: {
+    color: "#842029",
+  },
+  divider: {
+    height: 1,
+    marginVertical: 12,
+  },
+  emptyState: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+  },
+  emptyStateText: {
+    marginTop: 10,
+    fontSize: 16,
+  },
+  fab: {
+    position: "absolute",
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: "#0d6efd",
-    borderColor: "#0d6efd",
-  },
-  pageButtonText: {
-    fontSize: 14,
-    color: "#495057",
-  },
-  activePageButtonText: {
-    color: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
   },
 });
