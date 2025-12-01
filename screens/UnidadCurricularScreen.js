@@ -34,7 +34,8 @@ export default function UnidadCurricularScreen() {
   const handleSubmit = (data) => {
     const newItem = {
       id: items.length + 1,
-      ...data
+      ...data,
+      estado: 'Activa' 
     };
     setItems([...items, newItem]);
     setModalVisible(false);
@@ -51,16 +52,15 @@ export default function UnidadCurricularScreen() {
           <Text style={[styles.nombre, { color: theme.colors.text }]}>{item.nombre}</Text>
           <Text style={styles.codigo}>{item.codigo}</Text>
         </View>
-        <View style={styles.badge}>
-           <Text style={styles.badgeText}>{item.trayecto}</Text>
+        <View style={[styles.badge, item.estado === 'Activa' ? styles.activeBadge : styles.inactiveBadge]}>
+          <Text style={[styles.badgeText, item.estado === 'Activa' ? styles.activeText : styles.inactiveText]}>{item.estado}</Text>
         </View>
       </View>
 
       <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
 
-      <InfoRow label="UC" value={item.uc} />
-      <InfoRow label="HTE" value={item.hte} />
-      <InfoRow label="HTA" value={item.hta} />
+      <InfoRow label="Trayecto" value={`Trayecto ${item.trayecto}`} />
+      <InfoRow label="Período" value={item.fase} />
     </Card>
   );
 
@@ -115,38 +115,18 @@ export default function UnidadCurricularScreen() {
             required: true
           },
           { 
-            name: 'uc', 
-            label: 'Unidades Crédito', 
-            placeholder: 'Ej: 3', 
-            keyboardType: 'numeric',
-            regex: '^[0-9]+$',
-            errorMsg: 'UC debe ser un número.',
-            required: true
-          },
-          { 
-            name: 'hte', 
-            label: 'HTE', 
-            placeholder: 'Ej: 90', 
-            keyboardType: 'numeric',
-            regex: '^[0-9]+$',
-            errorMsg: 'HTE debe ser un número.',
-            required: true
-          },
-          { 
-            name: 'hta', 
-            label: 'HTA', 
-            placeholder: 'Ej: 60', 
-            keyboardType: 'numeric',
-            regex: '^[0-9]+$',
-            errorMsg: 'HTA debe ser un número.',
-            required: true
-          },
-          { 
             name: 'trayecto', 
             label: 'Trayecto', 
-            placeholder: 'Ej: I',
-            regex: '^[IVX0-9]+$',
-            errorMsg: 'El trayecto debe ser un número romano o arábigo.',
+            placeholder: 'Ej: 1',
+            keyboardType: 'numeric',
+            regex: '^[0-9]+$',
+            errorMsg: 'El trayecto debe ser un número.',
+            required: true
+          },
+          {
+            name: 'fase',
+            label: 'Período',
+            placeholder: 'Ej: Fase I, Fase II, Anual',
             required: true
           },
         ]}
@@ -193,10 +173,25 @@ const styles = StyleSheet.create({
     color: "#6c757d",
   },
   badge: {
-    backgroundColor: "#e9ecef",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
+    minWidth: 80,
+    alignItems: 'center',
+  },
+  activeBadge: {
+    backgroundColor: '#d4edda',
+  },
+  inactiveBadge: {
+    backgroundColor: '#f8d7da',
+  },
+  activeText: {
+    color: '#155724',
+    fontWeight: '600',
+  },
+  inactiveText: {
+    color: '#721c24',
+    fontWeight: '600',
   },
   badgeText: {
     fontSize: 12,

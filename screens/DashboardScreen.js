@@ -32,7 +32,7 @@ export default function DashboardScreen({ navigation }) {
   const dashboardItems = [
     { 
       id: 1, 
-      title: 'Docentes', 
+      title: 'Docente', 
       icon: 'people', 
       screen: 'Docente', 
       color: '#4e73df',
@@ -40,7 +40,7 @@ export default function DashboardScreen({ navigation }) {
     },
     { 
       id: 2, 
-      title: 'Espacios', 
+      title: 'Espacio', 
       icon: 'business', 
       screen: 'Espacios', 
       color: '#1cc88a',
@@ -48,7 +48,7 @@ export default function DashboardScreen({ navigation }) {
     },
     { 
       id: 3, 
-      title: 'Secciones', 
+      title: 'Sección', 
       icon: 'easel', 
       screen: 'Seccion', 
       color: '#36b9cc',
@@ -56,7 +56,7 @@ export default function DashboardScreen({ navigation }) {
     },
     { 
       id: 4, 
-      title: 'Unidades', 
+      title: 'Unidad Curricular', 
       icon: 'book', 
       screen: 'UnidadCurricular', 
       color: '#f6c23e',
@@ -64,7 +64,7 @@ export default function DashboardScreen({ navigation }) {
     },
     { 
       id: 5, 
-      title: 'Malla', 
+      title: 'Malla Curricular', 
       icon: 'git-network', 
       screen: 'MallaCurricular', 
       color: '#e74a3b',

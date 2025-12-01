@@ -20,6 +20,9 @@ export default function MallaCurricularScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [items, setItems] = useState(mallasCurriculares);
   const { theme } = useTheme();
+  
+  // Sort items by cohort in descending order
+  const sortedItems = [...items].sort((a, b) => b.cohorte - a.cohorte);
 
   const filteredData = items.filter(
     (item) =>
@@ -61,9 +64,8 @@ export default function MallaCurricularScreen() {
 
       <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
 
-      <InfoRow label="PNF" value={item.pnf} />
-      <InfoRow label="Trayectos" value={item.trayecto} />
-      <InfoRow label="Duración" value={item.duracion} />
+      <InfoRow label="Cohorte" value={`Cohorte ${item.cohorte}`} />
+      <InfoRow label="Descripción" value={item.descripcion} />
     </Card>
   );
 
@@ -78,7 +80,7 @@ export default function MallaCurricularScreen() {
       </View>
 
       <FlatList
-        data={filteredData}
+        data={filteredData.sort((a, b) => b.cohorte - a.cohorte)}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
@@ -104,34 +106,36 @@ export default function MallaCurricularScreen() {
           { 
             name: 'nombre', 
             label: 'Nombre', 
-            placeholder: 'Ej: Malla 2024',
-            regex: '^[a-zA-Z0-9 ]+$',
+            placeholder: 'Ej: Malla de Informática',
+            regex: '^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$',
             errorMsg: 'El nombre contiene caracteres inválidos.',
             required: true
           },
           { 
             name: 'codigo', 
             label: 'Código', 
-            placeholder: 'Ej: MALLA-24',
-            regex: '^[A-Z]{5}-[0-9]{2}$',
-            errorMsg: 'El código debe tener el formato AAAAA-00 (Ej: MALLA-24).',
+            placeholder: 'Ej: MALLA-INF-01',
+            regex: '^[A-Z0-9-]+$',
+            errorMsg: 'El código solo puede contener letras, números y guiones.',
             required: true
           },
           { 
-            name: 'pnf', 
-            label: 'PNF', 
-            placeholder: 'Ej: Informática',
-            regex: '^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$',
-            errorMsg: 'El PNF solo debe contener letras.',
-            required: true
-          },
-          { 
-            name: 'trayecto', 
-            label: 'Trayectos', 
-            placeholder: 'Ej: 4', 
+            name: 'cohorte', 
+            label: 'Número de Cohorte', 
+            placeholder: 'Ej: 1', 
             keyboardType: 'numeric',
             regex: '^[0-9]+$',
-            errorMsg: 'Trayectos debe ser un número.',
+            errorMsg: 'La cohorte debe ser un número.',
+            required: true
+          },
+          { 
+            name: 'descripcion', 
+            label: 'Descripción', 
+            placeholder: 'Ej: Malla para la carrera de Informática',
+            multiline: true,
+            numberOfLines: 3,
+            regex: '^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ .,;:()\\-]+$',
+            errorMsg: 'La descripción contiene caracteres inválidos.',
             required: true
           },
         ]}

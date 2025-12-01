@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Modal, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { View, Text, TextInput, Modal, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Alert, Dimensions } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 
@@ -92,21 +93,53 @@ export default function AddItemModal({ visible, onClose, onSubmit, title, fields
             {fields.map((field) => (
               <View key={field.name} style={styles.formGroup}>
                 <Text style={[styles.label, { color: theme.colors.text }]}>{field.label}</Text>
-                <TextInput
-                  style={[
-                    styles.input, 
+                {field.type === 'select' ? (
+                  <View style={[
+                    styles.selectContainer, 
                     { 
                       backgroundColor: theme.colors.background, 
                       borderColor: errors[field.name] ? '#dc3545' : theme.colors.border,
-                      color: theme.colors.text 
                     }
-                  ]}
-                  placeholder={field.placeholder}
-                  placeholderTextColor={theme.colors.textSecondary}
-                  value={formData[field.name] || ''}
-                  onChangeText={(text) => handleChange(field.name, text)}
-                  keyboardType={field.keyboardType || 'default'}
-                />
+                  ]}>
+                    <Picker
+                      selectedValue={formData[field.name] || ''}
+                      onValueChange={(value) => handleChange(field.name, value)}
+                      style={[styles.picker, { color: theme.colors.text }]}
+                      dropdownIconColor={theme.colors.text}
+                    >
+                      <Picker.Item 
+                        label={field.placeholder || 'Seleccione una opción'} 
+                        value="" 
+                        color={theme.colors.textSecondary}
+                      />
+                      {field.options && field.options.map((option, index) => (
+                        <Picker.Item 
+                          key={index} 
+                          label={option} 
+                          value={option}
+                        />
+                      ))}
+                    </Picker>
+                  </View>
+                ) : (
+                  <TextInput
+                    style={[
+                      styles.input, 
+                      { 
+                        backgroundColor: theme.colors.background, 
+                        borderColor: errors[field.name] ? '#dc3545' : theme.colors.border,
+                        color: theme.colors.text 
+                      }
+                    ]}
+                    placeholder={field.placeholder}
+                    placeholderTextColor={theme.colors.textSecondary}
+                    value={formData[field.name] || ''}
+                    onChangeText={(text) => handleChange(field.name, text)}
+                    keyboardType={field.keyboardType || 'default'}
+                    multiline={field.multiline}
+                    numberOfLines={field.numberOfLines || 1}
+                  />
+                )}
                 {errors[field.name] && (
                   <Text style={styles.errorText}>{errors[field.name]}</Text>
                 )}
@@ -179,6 +212,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
+  },
+  selectContainer: {
+    borderWidth: 1,
+    borderRadius: 8,
+  },
+  picker: {
+    height: 50,
   },
   errorText: {
     color: '#dc3545',

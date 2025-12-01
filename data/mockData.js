@@ -203,14 +203,20 @@ export const espacios = [
 export const mallasCurriculares = [
   {
     id: 1,
-    codigo: '05033',
-    nombre: 'PLAN DE ESTUDIO COHORTE III',
+    codigo: 'MALLA-24',
+    nombre: 'Malla Curricular 2024',
     cohorte: 3,
-    descripcion: 'Malla 2025',
+    descripcion: 'Malla curricular para la carrera de Informática, incluye las asignaturas y créditos necesarios para la formación profesional.',
     estado: 'Activa',
-    pnf: 'Informática',
-    trayecto: '4 Años',
-    duracion: '4 Años',
+    titulo: 'Ingeniero en Informática',
+  },
+  {
+    id: 2,
+    codigo: 'MALLA-23',
+    nombre: 'Malla Curricular 2023',
+    cohorte: 2,
+    descripcion: 'Versión anterior de la malla curricular de Informática, vigente para estudiantes de cohortes anteriores.',
+    estado: 'Inactiva',
     titulo: 'Ingeniero en Informática',
   },
 ];

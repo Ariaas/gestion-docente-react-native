@@ -63,7 +63,7 @@ export default function EspaciosScreen() {
 
       <InfoRow label="Tipo" value={item.tipo} />
       <InfoRow label="Capacidad" value={`${item.capacidad} personas`} />
-      <InfoRow label="Ubicación" value={`Edif. ${item.edificio}, Piso ${item.piso}`} />
+      <InfoRow label="Ubicación" value={`Edificio ${item.edificio}`} />
     </Card>
   );
 
@@ -140,15 +140,6 @@ export default function EspaciosScreen() {
             placeholder: 'Ej: A',
             regex: '^[a-zA-Z0-9]+$',
             errorMsg: 'El edificio debe ser alfanumérico.',
-            required: true
-          },
-          { 
-            name: 'piso', 
-            label: 'Piso', 
-            placeholder: 'Ej: 1', 
-            keyboardType: 'numeric',
-            regex: '^[0-9]+$',
-            errorMsg: 'El piso debe ser un número.',
             required: true
           },
         ]}
