@@ -71,7 +71,6 @@ export default function EspaciosScreen() {
       <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
 
       <InfoRow label="Tipo" value={item.tipo} />
-      <InfoRow label="Capacidad" value={`${item.capacidad} personas`} />
       <InfoRow label="Ubicación" value={`Edificio ${item.edificio}`} />
     </Card>
   );
@@ -132,15 +131,6 @@ export default function EspaciosScreen() {
             placeholder: 'Ej: Laboratorio',
             regex: '^[a-zA-Z ]+$',
             errorMsg: 'El tipo solo debe contener letras.',
-            required: true
-          },
-          { 
-            name: 'capacidad', 
-            label: 'Capacidad', 
-            placeholder: 'Ej: 30', 
-            keyboardType: 'numeric',
-            regex: '^[0-9]+$',
-            errorMsg: 'La capacidad debe ser un número.',
             required: true
           },
           { 

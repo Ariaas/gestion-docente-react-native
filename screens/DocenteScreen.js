@@ -53,7 +53,7 @@ export default function DocenteScreen() {
   };
 
   const renderItem = ({ item }) => (
-    <Card onPress={() => showAlert("Detalles", `Cédula: ${item.cedula}\nEspecialidad: ${item.especialidad}`, [{ text: 'Cerrar', onPress: hideAlert }])}>
+    <Card onPress={() => showAlert("Detalles", `Cédula: ${item.cedula}`, [{ text: 'Cerrar', onPress: hideAlert }])}>
       <View style={styles.cardHeader}>
         <View style={styles.iconContainer}>
           <Ionicons name="person" size={24} color="#4e73df" />
@@ -73,7 +73,6 @@ export default function DocenteScreen() {
 
       <InfoRow label="Email" value={item.email} />
       <InfoRow label="Teléfono" value={item.telefono} />
-      <InfoRow label="Especialidad" value={item.especialidad} />
     </Card>
   );
 
@@ -133,7 +132,7 @@ export default function DocenteScreen() {
             label: 'Correo Electrónico', 
             placeholder: 'Ej: juan@uptaeb.edu.ve', 
             keyboardType: 'email-address',
-            regex: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$',
+            regex: '^[^\\s@]+@[^\\s@]+\.[^\\s@]+$',
             errorMsg: 'Ingrese un correo electrónico válido.',
             required: true
           },
@@ -144,14 +143,6 @@ export default function DocenteScreen() {
             keyboardType: 'phone-pad',
             regex: '^[0-9]{4}-[0-9]{7}$',
             errorMsg: 'El teléfono debe tener el formato 0412-1234567.',
-            required: true
-          },
-          { 
-            name: 'especialidad', 
-            label: 'Especialidad', 
-            placeholder: 'Ej: Informática',
-            regex: '^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$',
-            errorMsg: 'La especialidad solo debe contener letras.',
             required: true
           },
         ]}
