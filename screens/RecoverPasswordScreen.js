@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableTouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import CustomAlert from '../components/CustomAlert';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 
@@ -7,20 +8,29 @@ export default function RecoverPasswordScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { theme } = useTheme();
+  const [alertInfo, setAlertInfo] = useState({ visible: false, title: '', message: '', buttons: [] });
+
+  const showAlert = (title, message, buttons) => {
+    setAlertInfo({ visible: true, title, message, buttons });
+  };
+
+  const hideAlert = () => {
+    setAlertInfo({ visible: false, title: '', message: '', buttons: [] });
+  };
 
   const handleSend = () => {
     if (!email.trim()) {
-      Alert.alert('Error', 'Por favor ingrese su correo electrónico');
+      showAlert('Error', 'Por favor ingrese su correo electrónico', [{ text: 'OK', onPress: hideAlert }]);
       return;
     }
     
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      Alert.alert(
-        'Correo Enviado', 
+      showAlert(
+        'Correo Enviado',
         'Si el correo existe en nuestro sistema, recibirá un enlace para recuperar su contraseña.',
-        [{ text: 'OK', onPress: () => navigation.goBack() }]
+        [{ text: 'Entendido', onPress: () => { hideAlert(); navigation.goBack(); } }]
       );
     }, 1500);
   };
@@ -70,6 +80,13 @@ export default function RecoverPasswordScreen({ navigation }) {
           )}
         </TouchableOpacity>
       </View>
+
+      <CustomAlert 
+        visible={alertInfo.visible}
+        title={alertInfo.title}
+        message={alertInfo.message}
+        buttons={alertInfo.buttons}
+      />
     </View>
   );
 }

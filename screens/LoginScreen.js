@@ -20,12 +20,12 @@ export default function LoginScreen({ navigation }) {
     <View style={styles.container}>
       <StatusBar style="light" />
       
-      {/* Top Section - Blue */}
+      {  }
       <View style={styles.topSection}>
         <LoginHeader />
       </View>
 
-      {/* Bottom Section - White/Dark */}
+      {  }
       <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={[styles.bottomSection, { backgroundColor: theme.colors.background }]}
@@ -51,16 +51,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#0d6efd",
   },
   topSection: {
-    flex: 0.45, // Takes up 45% of the screen
+    flex: 0.45, 
     backgroundColor: "#0d6efd",
     justifyContent: 'center',
     alignItems: 'center',
   },
   bottomSection: {
-    flex: 0.55, // Takes up 55% of the screen
+    flex: 0.55, 
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    overflow: 'hidden', // Ensures content respects the rounded corners
+    overflow: 'hidden', 
   },
   formContainer: {
     flex: 1,

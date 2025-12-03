@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Platform } from 'react-native';
+import CustomAlert from '../components/CustomAlert';
 import { useTheme } from '../context/ThemeContext';
 
 export default function SecurityScreen({ navigation }) {
@@ -9,18 +10,27 @@ export default function SecurityScreen({ navigation }) {
     confirm: '',
   });
   const { theme } = useTheme();
+  const [alertInfo, setAlertInfo] = useState({ visible: false, title: '', message: '', buttons: [] });
+
+  const showAlert = (title, message, buttons) => {
+    setAlertInfo({ visible: true, title, message, buttons });
+  };
+
+  const hideAlert = () => {
+    setAlertInfo({ visible: false, title: '', message: '', buttons: [] });
+  };
 
   const handleSave = () => {
     if (!passwords.current || !passwords.new || !passwords.confirm) {
-      Alert.alert('Error', 'Por favor complete todos los campos');
+      showAlert('Error', 'Por favor complete todos los campos', [{ text: 'OK', onPress: hideAlert }]);
       return;
     }
     if (passwords.new !== passwords.confirm) {
-      Alert.alert('Error', 'Las contraseñas nuevas no coinciden');
+      showAlert('Error', 'Las contraseñas nuevas no coinciden', [{ text: 'OK', onPress: hideAlert }]);
       return;
     }
-    Alert.alert('Éxito', 'Contraseña actualizada correctamente', [
-      { text: 'OK', onPress: () => navigation.goBack() }
+    showAlert('Éxito', 'Contraseña actualizada correctamente', [
+      { text: 'Genial', onPress: () => { hideAlert(); navigation.goBack(); } }
     ]);
   };
 
@@ -74,6 +84,13 @@ export default function SecurityScreen({ navigation }) {
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.saveButtonText}>Actualizar Contraseña</Text>
       </TouchableOpacity>
+
+      <CustomAlert 
+        visible={alertInfo.visible}
+        title={alertInfo.title}
+        message={alertInfo.message}
+        buttons={alertInfo.buttons}
+      />
     </ScrollView>
   );
 }

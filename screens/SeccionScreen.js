@@ -6,9 +6,9 @@ import {
   FlatList,
   TouchableOpacity,
   Modal,
-  Alert,
   ScrollView,
 } from "react-native";
+import CustomAlert from "../components/CustomAlert";
 import { Ionicons } from "@expo/vector-icons";
 import { secciones, horarios } from "../data/mockData";
 import SearchBar from "../components/SearchBar";
@@ -24,6 +24,15 @@ export default function SeccionScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [items, setItems] = useState(secciones);
   const { theme } = useTheme();
+  const [alertInfo, setAlertInfo] = useState({ visible: false, title: '', message: '', buttons: [] });
+
+  const showAlert = (title, message, buttons) => {
+    setAlertInfo({ visible: true, title, message, buttons });
+  };
+
+  const hideAlert = () => {
+    setAlertInfo({ visible: false, title: '', message: '', buttons: [] });
+  };
 
   const filteredData = items.filter(
     (item) =>
@@ -51,7 +60,7 @@ export default function SeccionScreen() {
     };
     setItems([...items, newItem]);
     setModalVisible(false);
-    Alert.alert("Éxito", "Sección registrada correctamente");
+    showAlert("Éxito", "Sección registrada correctamente", [{ text: 'OK', onPress: hideAlert }]);
   };
 
   const renderItem = ({ item }) => (
@@ -116,9 +125,9 @@ export default function SeccionScreen() {
           { 
             name: 'codigo', 
             label: 'Código', 
-            placeholder: 'Ej: INFO-01 o IIN2301',
+            placeholder: 'Ej: IN3103 o IIN2301',
             regex: '^[A-Za-z]{2,3}-?[0-9]+$',
-            errorMsg: 'El código debe tener 2-3 letras seguidas de números (Ej: IN-1234 o IIN2301).',
+            errorMsg: 'El código debe tener 2-3 letras seguidas de números (Ej: IN3103 o IIN2301).',
             required: true
           },
           { 
@@ -204,6 +213,13 @@ export default function SeccionScreen() {
           </ScrollView>
         </View>
       </Modal>
+
+      <CustomAlert 
+        visible={alertInfo.visible}
+        title={alertInfo.title}
+        message={alertInfo.message}
+        buttons={alertInfo.buttons}
+      />
     </View>
   );
 }
@@ -279,7 +295,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.27,
     shadowRadius: 4.65,
   },
-  // Modal Styles
+
   modalContainer: {
     flex: 1,
   },

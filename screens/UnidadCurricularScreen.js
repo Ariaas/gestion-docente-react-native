@@ -5,8 +5,8 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  Alert,
 } from "react-native";
+import CustomAlert from "../components/CustomAlert";
 import { Ionicons } from "@expo/vector-icons";
 import { unidadesCurriculares } from "../data/mockData";
 import SearchBar from "../components/SearchBar";
@@ -20,6 +20,15 @@ export default function UnidadCurricularScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [items, setItems] = useState(unidadesCurriculares);
   const { theme } = useTheme();
+  const [alertInfo, setAlertInfo] = useState({ visible: false, title: '', message: '', buttons: [] });
+
+  const showAlert = (title, message, buttons) => {
+    setAlertInfo({ visible: true, title, message, buttons });
+  };
+
+  const hideAlert = () => {
+    setAlertInfo({ visible: false, title: '', message: '', buttons: [] });
+  };
 
   const filteredData = items.filter(
     (item) =>
@@ -39,11 +48,11 @@ export default function UnidadCurricularScreen() {
     };
     setItems([...items, newItem]);
     setModalVisible(false);
-    Alert.alert("Éxito", "Unidad curricular registrada correctamente");
+    showAlert("Éxito", "Unidad curricular registrada correctamente", [{ text: 'OK', onPress: hideAlert }]);
   };
 
   const renderItem = ({ item }) => (
-    <Card onPress={() => Alert.alert("Detalles", item.nombre)}>
+    <Card onPress={() => showAlert("Detalles", `Código: ${item.codigo}\nTrayecto: ${item.trayecto}`, [{ text: 'Cerrar', onPress: hideAlert }])}>
       <View style={styles.cardHeader}>
         <View style={styles.iconContainer}>
           <Ionicons name="book" size={24} color="#f6c23e" />
@@ -130,6 +139,13 @@ export default function UnidadCurricularScreen() {
             required: true
           },
         ]}
+      />
+
+      <CustomAlert 
+        visible={alertInfo.visible}
+        title={alertInfo.title}
+        message={alertInfo.message}
+        buttons={alertInfo.buttons}
       />
     </View>
   );

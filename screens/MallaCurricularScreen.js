@@ -5,8 +5,8 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  Alert,
 } from "react-native";
+import CustomAlert from "../components/CustomAlert";
 import { Ionicons } from "@expo/vector-icons";
 import { mallasCurriculares } from "../data/mockData";
 import SearchBar from "../components/SearchBar";
@@ -20,8 +20,17 @@ export default function MallaCurricularScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [items, setItems] = useState(mallasCurriculares);
   const { theme } = useTheme();
+  const [alertInfo, setAlertInfo] = useState({ visible: false, title: '', message: '', buttons: [] });
+
+  const showAlert = (title, message, buttons) => {
+    setAlertInfo({ visible: true, title, message, buttons });
+  };
+
+  const hideAlert = () => {
+    setAlertInfo({ visible: false, title: '', message: '', buttons: [] });
+  };
   
-  // Sort items by cohort in descending order
+
   const sortedItems = [...items].sort((a, b) => b.cohorte - a.cohorte);
 
   const filteredData = items.filter(
@@ -42,11 +51,11 @@ export default function MallaCurricularScreen() {
     };
     setItems([...items, newItem]);
     setModalVisible(false);
-    Alert.alert("Éxito", "Malla curricular registrada correctamente");
+    showAlert("Éxito", "Malla curricular registrada correctamente", [{ text: 'OK', onPress: hideAlert }]);
   };
 
   const renderItem = ({ item }) => (
-    <Card onPress={() => Alert.alert("Detalles", item.nombre)}>
+    <Card onPress={() => showAlert("Detalles", `Código: ${item.codigo}\nCohorte: ${item.cohorte}`, [{ text: 'Cerrar', onPress: hideAlert }])}>
       <View style={styles.cardHeader}>
         <View style={styles.iconContainer}>
           <Ionicons name="git-network" size={24} color="#e74a3b" />
@@ -139,6 +148,13 @@ export default function MallaCurricularScreen() {
             required: true
           },
         ]}
+      />
+
+      <CustomAlert 
+        visible={alertInfo.visible}
+        title={alertInfo.title}
+        message={alertInfo.message}
+        buttons={alertInfo.buttons}
       />
     </View>
   );

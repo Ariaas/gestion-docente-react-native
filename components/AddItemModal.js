@@ -9,7 +9,6 @@ export default function AddItemModal({ visible, onClose, onSubmit, title, fields
   const [errors, setErrors] = useState({});
   const { theme } = useTheme();
 
-  // Reset form when modal opens/closes
   useEffect(() => {
     if (visible) {
       setFormData({});
@@ -42,13 +41,12 @@ export default function AddItemModal({ visible, onClose, onSubmit, title, fields
   const handleChange = (name, value) => {
     setFormData(prev => ({ ...prev, [name]: value }));
     
-    // Real-time validation
     const error = validateField(name, value);
     setErrors(prev => ({ ...prev, [name]: error }));
   };
 
   const handleSubmit = () => {
-    // Final validation before submit
+    
     let isValid = true;
     const newErrors = {};
 
@@ -67,7 +65,6 @@ export default function AddItemModal({ visible, onClose, onSubmit, title, fields
     }
 
     onSubmit(formData);
-    // Form reset is handled by useEffect on visible change or parent closing it
   };
 
   return (
@@ -174,7 +171,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
-    height: '80%', // Takes up 80% of screen
+    height: '80%', 
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

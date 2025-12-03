@@ -5,8 +5,8 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  Alert,
 } from "react-native";
+import CustomAlert from "../components/CustomAlert";
 import { Ionicons } from "@expo/vector-icons";
 import { docentes } from "../data/mockData";
 import SearchBar from "../components/SearchBar";
@@ -20,6 +20,15 @@ export default function DocenteScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [items, setItems] = useState(docentes);
   const { theme } = useTheme();
+  const [alertInfo, setAlertInfo] = useState({ visible: false, title: '', message: '', buttons: [] });
+
+  const showAlert = (title, message, buttons) => {
+    setAlertInfo({ visible: true, title, message, buttons });
+  };
+
+  const hideAlert = () => {
+    setAlertInfo({ visible: false, title: '', message: '', buttons: [] });
+  };
 
   const filteredData = items.filter(
     (item) =>
@@ -40,11 +49,11 @@ export default function DocenteScreen() {
     };
     setItems([...items, newItem]);
     setModalVisible(false);
-    Alert.alert("Éxito", "Docente registrado correctamente");
+    showAlert("Éxito", "Docente registrado correctamente", [{ text: 'OK', onPress: hideAlert }]);
   };
 
   const renderItem = ({ item }) => (
-    <Card onPress={() => Alert.alert("Detalles", item.nombreCompleto)}>
+    <Card onPress={() => showAlert("Detalles", `Cédula: ${item.cedula}\nEspecialidad: ${item.especialidad}`, [{ text: 'Cerrar', onPress: hideAlert }])}>
       <View style={styles.cardHeader}>
         <View style={styles.iconContainer}>
           <Ionicons name="person" size={24} color="#4e73df" />
@@ -146,6 +155,13 @@ export default function DocenteScreen() {
             required: true
           },
         ]}
+      />
+
+      <CustomAlert 
+        visible={alertInfo.visible}
+        title={alertInfo.title}
+        message={alertInfo.message}
+        buttons={alertInfo.buttons}
       />
     </View>
   );

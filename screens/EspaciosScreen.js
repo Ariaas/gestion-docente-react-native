@@ -5,8 +5,8 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  Alert,
 } from "react-native";
+import CustomAlert from "../components/CustomAlert";
 import { Ionicons } from "@expo/vector-icons";
 import { espacios } from "../data/mockData";
 import SearchBar from "../components/SearchBar";
@@ -20,6 +20,15 @@ export default function EspaciosScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [items, setItems] = useState(espacios);
   const { theme } = useTheme();
+  const [alertInfo, setAlertInfo] = useState({ visible: false, title: '', message: '', buttons: [] });
+
+  const showAlert = (title, message, buttons) => {
+    setAlertInfo({ visible: true, title, message, buttons });
+  };
+
+  const hideAlert = () => {
+    setAlertInfo({ visible: false, title: '', message: '', buttons: [] });
+  };
 
   const filteredData = items.filter(
     (item) =>
@@ -39,11 +48,11 @@ export default function EspaciosScreen() {
     };
     setItems([...items, newItem]);
     setModalVisible(false);
-    Alert.alert("Éxito", "Espacio registrado correctamente");
+    showAlert("Éxito", "Espacio registrado correctamente", [{ text: 'OK', onPress: hideAlert }]);
   };
 
   const renderItem = ({ item }) => (
-    <Card onPress={() => Alert.alert("Detalles", item.nombre)}>
+    <Card onPress={() => showAlert("Detalles", `Código: ${item.codigo}\nTipo: ${item.tipo}\nCapacidad: ${item.capacidad} personas`, [{ text: 'Cerrar', onPress: hideAlert }])}>
       <View style={styles.cardHeader}>
         <View style={styles.iconContainer}>
           <Ionicons name="business" size={24} color="#1cc88a" />
@@ -143,6 +152,13 @@ export default function EspaciosScreen() {
             required: true
           },
         ]}
+      />
+
+      <CustomAlert 
+        visible={alertInfo.visible}
+        title={alertInfo.title}
+        message={alertInfo.message}
+        buttons={alertInfo.buttons}
       />
     </View>
   );

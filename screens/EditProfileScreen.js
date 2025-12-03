@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
+import CustomAlert from '../components/CustomAlert';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../context/ThemeContext';
@@ -9,6 +10,15 @@ export default function EditProfileScreen({ navigation }) {
   const { theme } = useTheme();
   const { userData, updateUser } = useUser();
   const [formData, setFormData] = useState(userData);
+  const [alertInfo, setAlertInfo] = useState({ visible: false, title: '', message: '', buttons: [] });
+
+  const showAlert = (title, message, buttons) => {
+    setAlertInfo({ visible: true, title, message, buttons });
+  };
+
+  const hideAlert = () => {
+    setAlertInfo({ visible: false, title: '', message: '', buttons: [] });
+  };
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -25,8 +35,8 @@ export default function EditProfileScreen({ navigation }) {
 
   const handleSave = () => {
     updateUser(formData);
-    Alert.alert('Éxito', 'Perfil actualizado correctamente', [
-      { text: 'OK', onPress: () => navigation.goBack() }
+    showAlert('Éxito', 'Perfil actualizado correctamente', [
+      { text: 'OK', onPress: () => { hideAlert(); navigation.goBack(); } }
     ]);
   };
 
@@ -111,6 +121,13 @@ export default function EditProfileScreen({ navigation }) {
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.saveButtonText}>Guardar Cambios</Text>
       </TouchableOpacity>
+
+      <CustomAlert 
+        visible={alertInfo.visible}
+        title={alertInfo.title}
+        message={alertInfo.message}
+        buttons={alertInfo.buttons}
+      />
     </ScrollView>
   );
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useUser } from '../context/UserContext';
@@ -10,18 +10,14 @@ export default function ProfileScreen({ navigation }) {
   const { userData } = useUser();
 
   const handleLogout = () => {
-    Alert.alert(
-      "Cerrar Sesión",
-      "¿Estás seguro que deseas cerrar sesión?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        { 
-          text: "Salir", 
-          style: "destructive",
-          onPress: () => navigation.replace('Login')
-        }
-      ]
-    );
+    try {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    } catch (error) {
+      console.error("Error al intentar cerrar sesión:", error);
+    }
   };
 
   return (

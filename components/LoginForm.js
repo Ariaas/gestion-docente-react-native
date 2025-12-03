@@ -57,7 +57,6 @@ export default function LoginForm({
   const handleSubmit = () => {
     if (validate()) {
       setIsLoading(true);
-      // Simulate network request
       setTimeout(() => {
         setIsLoading(false);
         onLogin();
